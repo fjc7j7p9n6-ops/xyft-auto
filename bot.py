@@ -2,18 +2,25 @@ import requests
 import json
 from datetime import datetime
 
-URL = "https://example.com"  # ← 以后你可以改这里
+URL = "https://www.3658kj.com/h5/#/lottery?id=10057"
 
-def fetch():
+def fetch_data():
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
     try:
-        r = requests.get(URL, timeout=10)
-        html = r.text
+        res = requests.get(URL, headers=headers, timeout=10)
+        html = res.text
 
-        return {
+        # 简单提取（后续可以升级成API模式）
+        data = {
             "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "length": len(html),
-            "preview": html[:200]
+            "sample": html[:300]
         }
+
+        return data
 
     except Exception as e:
         return {
@@ -23,17 +30,12 @@ def fetch():
 
 def save(data):
     try:
-        with open("data.json", "r", encoding="utf-8") as f:
-            old = json.load(f)
+        with open("data.json", "a", encoding="utf-8") as f:
+            f.write(json.dumps(data, ensure_ascii=False) + "\n")
     except:
-        old = []
-
-    old.append(data)
-
-    with open("data.json", "w", encoding="utf-8") as f:
-        json.dump(old, f, ensure_ascii=False, indent=2)
+        pass
 
 if __name__ == "__main__":
-    data = fetch()
+    data = fetch_data()
     save(data)
-    print("OK:", data)
+    print(data)
